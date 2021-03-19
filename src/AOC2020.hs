@@ -9,9 +9,10 @@ module AOC2020 ( aoc1
   , aoc6
   , aoc7
   , aoc8
+  , aoc9
                ) where
 
-import qualified Data.List as L (drop, head, maximum, minimum, take, (!!), unfoldr, last)
+import qualified Data.List as L (drop, head, maximum, minimum, take, last, (!!))
 import qualified Data.List.Split as L (chunksOf)
 import qualified Data.List.Unique as L (repeatedBy, sortUniq)
 import qualified Data.Map.Strict as M (fromList, keys, lookup, toList, insert, empty)
@@ -21,6 +22,26 @@ import Relude
 newtype Bag = Bag Text deriving (Eq)
 
 data BagRule = BagRule Bag [Bag] Bool
+
+aoc9 :: IO (Int, Int)
+aoc9 = do
+  ss <- readFileText "data/aoc9.dat"
+  let ws :: [Int]; ws = mapMaybe ( readMaybe . toString ) . words $ ss
+  let n = 25
+  let hasPair :: [Int] -> Int -> Int -> Maybe Int
+      hasPair xs x _ = do
+        guard $ notElem x [(xs L.!! i) + (xs L.!! j) | i<- [0..n-1], j <- [0..n-1], i/=j]
+        pure x
+  -- let cs :: Int -> [Int]
+  --     cs off = [(xs L.!! i) + (xs L.!! j) | i<- [0..n-1], j <- [0..n-1], i/=j] where
+  --       xs = L.take 5 . L.drop off $ ws
+  -- print $ map cs [0 .. length ws - n]
+  print . mapMaybe (\off -> hasPair (L.take n . L.drop off $ ws) (ws L.!! (n+off)) off) $ [0 .. length ws - n - 1]
+  let a = L.head . mapMaybe (\off -> hasPair (L.take n . L.drop off $ ws) (ws L.!! (n+off)) off) $ [0 .. length ws - n - 1]
+  let b = 0
+
+  putTextLn $ "result is " <> show (a, b)
+  pure (a, b)
 
 aoc8 :: IO (Int, Int)
 aoc8 = do
@@ -35,8 +56,9 @@ aoc8 = do
                             $ lines ss
   let exe :: (Int, Int, Map Int Int) -> Maybe (Int, (Int, Int, Map Int Int))
       exe (cnt, acc, im) = do
-        let inst = (L.!!) instrs cnt
-            acc' = case fst inst of
+        inst <- (!!?) instrs cnt
+        -- let inst = (L.!!) instrs cnt
+        let acc' = case fst inst of
                 1 -> acc + snd inst
                 _ -> acc
             cnt' = case fst inst of
@@ -45,9 +67,34 @@ aoc8 = do
             im' = M.insert cnt acc im
         guard $ isNothing (M.lookup cnt' im)
         pure (acc', (cnt', acc', im'))
-  -- print $ L.unfoldr exe (0, 0, M.empty)
-  let a = L.last $ L.unfoldr exe (0, 0, M.empty)
-  let b = 0
+  -- print $ unfoldr exe (0, 0, M.empty)
+  let a = L.last $ unfoldr exe (0, 0, M.empty)
+
+  let exe' :: (Int, Int, Int, Map Int Int) -> Maybe ((Int, Int), (Int, Int, Int, Map Int Int))
+      exe' (cnt, acc, chg, im) = do
+        inst' <- (!!?) instrs cnt
+        let inst = if cnt == chg then (case fst inst' of -- change one inst
+                                        0 -> (2, snd inst')
+                                        2 -> (0, snd inst')
+                                        _ -> inst'
+                                     )
+                                else inst'
+        let acc' = case fst inst of
+                1 -> acc + snd inst
+                _ -> acc
+            cnt' = case fst inst of
+                 2 -> cnt + snd inst
+                 _ -> cnt+1
+            im' = M.insert cnt acc im
+            chg' = chg
+        guard $ isNothing (M.lookup cnt' im)
+        pure ((acc', cnt'), (cnt', acc', chg', im'))
+  let execute i = res where
+        xs = unfoldr exe' (0, 0, i, M.empty)
+        x = L.last xs
+        res = if snd x == length instrs then Just (x,xs) else Nothing
+  -- forM_ [0..length instrs] (print . execute)
+  let b = fst . fst . L.head . mapMaybe execute $ [0..length instrs]
   putTextLn $ "result is " <> show (a, b)
   pure (a, b)
 
