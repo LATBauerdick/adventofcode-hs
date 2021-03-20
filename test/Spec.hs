@@ -58,5 +58,5 @@ spec =
 
     it "test running aoc9" $ do
       x <- aoc9
-      x `shouldBe` (0, 0)
+      x `shouldBe` (1639024365, 219202240)
 

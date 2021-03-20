@@ -32,14 +32,25 @@ aoc9 = do
       hasPair xs x _ = do
         guard $ notElem x [(xs L.!! i) + (xs L.!! j) | i<- [0..n-1], j <- [0..n-1], i/=j]
         pure x
-  -- let cs :: Int -> [Int]
-  --     cs off = [(xs L.!! i) + (xs L.!! j) | i<- [0..n-1], j <- [0..n-1], i/=j] where
-  --       xs = L.take 5 . L.drop off $ ws
-  -- print $ map cs [0 .. length ws - n]
-  print . mapMaybe (\off -> hasPair (L.take n . L.drop off $ ws) (ws L.!! (n+off)) off) $ [0 .. length ws - n - 1]
+  -- print . mapMaybe (\off -> hasPair (L.take n . L.drop off $ ws) (ws L.!! (n+off)) off) $ [0 .. length ws - n - 1]
   let a = L.head . mapMaybe (\off -> hasPair (L.take n . L.drop off $ ws) (ws L.!! (n+off)) off) $ [0 .. length ws - n - 1]
-  let b = 0
 
+  let sumUp :: [Int] -> Int -> Maybe Int
+      sumUp xs x = do
+        let accum :: (Int,Int) -> Maybe (Int, (Int, Int))
+            accum (s, cnt) = do
+              let c = xs L.!! cnt
+              let s' = s + c
+              guard $ s' <= x
+              pure (c, (s', cnt+1))
+            cs = unfoldr accum (0, 0)
+        guard $ length cs > 1
+        guard $ sum cs == x
+        let mx = L.maximum cs
+        let mn = L.minimum cs
+        pure $ mn + mx
+  -- print (a, ws)
+  let b = L.head . mapMaybe (\i -> sumUp (L.drop i ws) a) $ [0..length ws - 1]
   putTextLn $ "result is " <> show (a, b)
   pure (a, b)
 
