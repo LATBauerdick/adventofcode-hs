@@ -26,16 +26,16 @@ data BagRule = BagRule Bag [Bag] Bool
 aoc9 :: IO (Int, Int)
 aoc9 = do
   ss <- readFileText "data/aoc9.dat"
-  let ws :: [Int]; ws = mapMaybe ( readMaybe . toString ) . words $ ss
+  let ws :: [] Int; ws = mapMaybe ( readMaybe . toString ) . words $ ss
   let n = 25
-  let hasPair :: [Int] -> Int -> Int -> Maybe Int
+  let hasPair :: [] Int -> Int -> Int -> Maybe Int
       hasPair xs x _ = do
         guard $ notElem x [(xs L.!! i) + (xs L.!! j) | i<- [0..n-1], j <- [0..n-1], i/=j]
         pure x
   -- print . mapMaybe (\off -> hasPair (L.take n . L.drop off $ ws) (ws L.!! (n+off)) off) $ [0 .. length ws - n - 1]
   let a = L.head . mapMaybe (\off -> hasPair (L.take n . L.drop off $ ws) (ws L.!! (n+off)) off) $ [0 .. length ws - n - 1]
 
-  let sumUp :: [Int] -> Int -> Maybe Int
+  let sumUp :: [] Int -> Int -> Maybe Int
       sumUp xs x = do
         let accum :: (Int,Int) -> Maybe (Int, (Int, Int))
             accum (s, cnt) = do
