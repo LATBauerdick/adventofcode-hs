@@ -9,6 +9,7 @@ import Test.QuickCheck ( property )
 import AOC2021  ( aoc1
                 , aoc2
                 , aoc3
+                , aoc4
                 )
 main :: IO ()
 
@@ -28,4 +29,8 @@ spec =
 
     it "test running aoc3" $ do
       x <- aoc3
-      x `shouldBe` (1480518,1282809906)
+      x `shouldBe` (845186,4636702)
+
+    it "test running aoc4" $ do
+      x <- aoc4
+      x `shouldBe` (845186,4636702)
