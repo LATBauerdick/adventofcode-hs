@@ -43,4 +43,4 @@ spec =
 
     it "test running aoc6" $ do
       x <- aoc6
-      x `shouldBe` (0,0)
+      x `shouldBe` (353274,1609314870967)
