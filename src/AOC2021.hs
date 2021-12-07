@@ -5,6 +5,7 @@ module AOC2021  ( aoc1
                 , aoc2
                 , aoc3
                 , aoc4
+                , aoc5
                 ) where
 
 import Data.Char (digitToInt)
@@ -13,13 +14,39 @@ import Data.Maybe (fromJust)
 -- import qualified Data.List as L (drop, head, maximum, minimum, take, last, (!!))
 -- import qualified Data.List.Split as L (chunksOf)
 -- import qualified Data.List.Unique as L (repeatedBy, sortUniq)
--- import qualified Data.Map.Strict as M (fromList, keys, lookup, toList, insert, empty)
+import qualified Data.Map.Strict as M (insertWith, empty, filter, size)
 import qualified Data.Text as T
 import Relude
 
 newtype Bag = Bag Text deriving (Eq)
 
 data BagRule = BagRule Bag [Bag] Bool
+
+type Point = (Int, Int)
+type Segment = (Point, Point)
+readInt :: Text -> Int -- crash if not an integer
+readInt = fromJust . readMaybe . toString . T.filter (/= '+')
+
+aoc5 :: IO (Int, Int)
+aoc5 = do -- thanks for parsing help to https://github.com/BartoszMilewski
+  ss <- readFileText "data/aoc5.dat"
+  let segs = parseLn . words <$> lines ss
+      parseLn [sp1, _, sp2] =
+              let
+                  [x0,y0] = T.splitOn "," sp1
+                  [x1,y1] = T.splitOn "," sp2
+              in ((readInt x0, readInt y0), (readInt x1, readInt y1))
+  let notDiag :: Segment -> Bool; notDiag ((x0,y0),(x1,y1)) = x0 == x1 || y0 == y1
+  let mkLine :: Segment -> [Point]
+      mkLine ((x0, y0), (x1, y1)) =
+        let dx = abs ( x1-x0 ); dy = abs ( y1-y0 ); ddx = signum ( x1-x0 ); ddy = signum ( y1-y0 )
+        in [ (x0 + n * ddx, y0 + n * ddy) | n <- [0 .. max dx dy]]
+
+  let a =  M.size . M.filter (>1) . foldl' (\m p -> M.insertWith (+) p 1 m) M.empty . concatMap mkLine . filter notDiag $ segs
+  let b =  M.size . M.filter (>1) . foldl' (\m p -> M.insertWith (+) p 1 m) M.empty . concatMap mkLine $ segs
+
+  putTextLn $ "result is " <> show a <> " and " <> show b
+  pure (a, b)
 
 aoc4 :: IO (Int, Int)
 aoc4 = do
@@ -29,17 +56,17 @@ aoc4 = do
       draws = mapMaybe (readMaybe . toString) . T.split (==',') . fromJust . viaNonEmpty head $ lines ss
       boards :: [[Int]]
       boards = chunksOf 25 . mapMaybe (readMaybe . toString) . drop 1 $ words ss
-  print draws
-  print boards
+  -- print draws
+  -- print boards
   let hasWon :: [Int] -> Bool
-      hasWon board = if board == [] then False 
-                      else let [ a00, a01, a02, a03, a04
-                                  , a10, a11, a12, a13, a14
-                                  , a20, a21, a22, a23, a24
-                                  , a30, a31, a32, a33, a34
-                                  , a40, a41, a42, a43, a44
-                                  ] = board
-                                in  a00+a01+a02+a03+a04 == -5
+      hasWon board = not (null board) &&
+                        let [  a00, a01, a02, a03, a04
+                             , a10, a11, a12, a13, a14
+                             , a20, a21, a22, a23, a24
+                             , a30, a31, a32, a33, a34
+                             , a40, a41, a42, a43, a44
+                             ] = board
+                          in  a00+a01+a02+a03+a04 == -5
                                   || a10+a11+a12+a13+a14 == -5
                                   || a20+a21+a22+a23+a24 == -5
                                   || a30+a31+a32+a33+a34 == -5
@@ -64,19 +91,21 @@ aoc4 = do
       mark d bs = map (\i -> if i == d then -1 else i) bs
 
   let (_, winnerBoard, lastDraw) = foldl' (\(bs, w, l) d -> let ms = marked bs d; win = winner ms in if w /= [] then ([],w,l) else if win /= [] then ([], win, d) else (ms, [], 0)) (boards, [], 0) draws
-  print $ winnerBoard
-  print $ lastDraw
+  print winnerBoard
+  print lastDraw
   print $ score winnerBoard
 
   let losers :: [[Int]] -> [[Int]]
       losers = mapMaybe (\b -> if hasWon b then Nothing else Just b )
-  let (loserBoard, loserDraw) =
-        foldl' (\(bs, ld) d -> let ms = marked bs d; ls = losers ms in if ls == [] then (bs,ld) else (ls,d)) (boards, 0) draws
+  let (_, loserDraw, loserBoard) =
+        foldl' (\(rembs, ld, lb) d -> let ms = marked rembs d; ls = losers ms in if null rembs then ([],ld,lb) else if null ls then ([],d,ms) else (ls,d,lb)) (boards, 0, []) draws
 
-  print $ viaNonEmpty head loserBoard
-  print $ loserDraw
+  print loserBoard
+  -- print $ losers loserBoard
+  -- print $ viaNonEmpty head loserBoard
+  print loserDraw
   let loserScore = score . fromJust $ viaNonEmpty head loserBoard
-  print $ loserScore
+  -- print loserScore
 
   let a = lastDraw * score winnerBoard; b = loserDraw * loserScore
   putTextLn $ "result is " <> show a <> " and " <> show b

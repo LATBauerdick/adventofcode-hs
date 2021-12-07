@@ -10,6 +10,7 @@ import AOC2021  ( aoc1
                 , aoc2
                 , aoc3
                 , aoc4
+                , aoc5
                 )
 main :: IO ()
 
@@ -33,4 +34,8 @@ spec =
 
     it "test running aoc4" $ do
       x <- aoc4
-      x `shouldBe` (845186,4636702)
+      x `shouldBe` (60368,17435)
+
+    it "test running aoc5" $ do
+      x <- aoc5
+      x `shouldBe` (6007,19349)
