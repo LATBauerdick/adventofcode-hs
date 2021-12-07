@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       AOC2021
+      AOC2021D5
+      AOC2021D6
   other-modules:
       Paths_aoc_hs
   hs-source-dirs:
