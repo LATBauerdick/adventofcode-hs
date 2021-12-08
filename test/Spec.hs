@@ -6,13 +6,15 @@ import Relude
 import Test.Hspec ( Spec, hspec, describe, it, shouldBe )
 import Test.QuickCheck ( property )
 
+import AOC2021D8  ( aoc8 )
+import AOC2021D7  ( aoc7 )
+import AOC2021D6  ( aoc6 )
+import AOC2021D5  ( aoc5 )
 import AOC2021  ( aoc1
                 , aoc2
                 , aoc3
                 , aoc4
                 )
-import AOC2021D5  ( aoc5 )
-import AOC2021D6  ( aoc6 )
 main :: IO ()
 
 main = do
@@ -44,3 +46,11 @@ spec =
     it "test running aoc6" $ do
       x <- aoc6
       x `shouldBe` (353274,1609314870967)
+
+    it "test running aoc7" $ do
+      x <- aoc7
+      x `shouldBe` (344735,96798233)
+  
+    it "test running aoc8" $ do
+      x <- aoc8
+      x `shouldBe` (0,1)

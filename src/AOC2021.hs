@@ -13,7 +13,6 @@ import Data.Maybe (fromJust)
 -- import qualified Data.List as L (drop, head, maximum, minimum, take, last, (!!))
 -- import qualified Data.List.Split as L (chunksOf)
 -- import qualified Data.List.Unique as L (repeatedBy, sortUniq)
-import qualified Data.Map.Strict as M (insertWith, empty, filter, size)
 import qualified Data.Text as T
 import Relude
 
@@ -25,8 +24,6 @@ aoc4 = do
       draws = mapMaybe (readMaybe . toString) . T.split (==',') . fromJust . viaNonEmpty head $ lines ss
       boards :: [[Int]]
       boards = chunksOf 25 . mapMaybe (readMaybe . toString) . drop 1 $ words ss
-  -- print draws
-  -- print boards
   let hasWon :: [Int] -> Bool
       hasWon board = not (null board) &&
                         let [  a00, a01, a02, a03, a04
@@ -51,7 +48,7 @@ aoc4 = do
       score :: [Int] -> Int
       score board = if hasWon board then foldl' (\s i -> if i>0 then s+i else s ) 0 board else 0
 
-  print $ winner boards
+  -- print $ winner boards
 
 
   let marked :: [[Int]] -> Int -> [[Int]]
@@ -60,21 +57,13 @@ aoc4 = do
       mark d bs = map (\i -> if i == d then -1 else i) bs
 
   let (_, winnerBoard, lastDraw) = foldl' (\(bs, w, l) d -> let ms = marked bs d; win = winner ms in if w /= [] then ([],w,l) else if win /= [] then ([], win, d) else (ms, [], 0)) (boards, [], 0) draws
-  print winnerBoard
-  print lastDraw
-  print $ score winnerBoard
 
   let losers :: [[Int]] -> [[Int]]
       losers = mapMaybe (\b -> if hasWon b then Nothing else Just b )
   let (_, loserDraw, loserBoard) =
         foldl' (\(rembs, ld, lb) d -> let ms = marked rembs d; ls = losers ms in if null rembs then ([],ld,lb) else if null ls then ([],d,ms) else (ls,d,lb)) (boards, 0, []) draws
 
-  print loserBoard
-  -- print $ losers loserBoard
-  -- print $ viaNonEmpty head loserBoard
-  print loserDraw
   let loserScore = score . fromJust $ viaNonEmpty head loserBoard
-  -- print loserScore
 
   let a = lastDraw * score winnerBoard; b = loserDraw * loserScore
   putTextLn $ "result is " <> show a <> " and " <> show b
@@ -89,14 +78,11 @@ aoc3 = do
                     let bits'  = map (\x -> if x == '1' then 1 else 0) cs
                       in zipWith (+) bits bits'
                   ) (replicate 12 0) . map toString $ ws
-  print bs
   let n2 = length ws `div` 2
       gammab = map (\b -> if b > n2 then '1' else '0') bs
       epsb   = map (\b -> if b < n2 then '1' else '0') bs
       toDec :: String -> Int
       toDec = foldl' (\acc x -> acc * 2 + digitToInt x) 0
-  print (gammab, toDec gammab)
-  print (epsb, toDec epsb)
 
   let a = toDec gammab * toDec epsb
 
@@ -118,20 +104,6 @@ aoc3 = do
   let ogr = toDec . toString . fromMaybe "0" $ viaNonEmpty head (foldl' (xxx o2) ws $ take 12 [0..])
   let csr = toDec . toString . fromMaybe "0" $ viaNonEmpty head (foldl' (xxx co2) ws $ take 12 [0..])
 
-  print ogr
-  print csr
-{-
-  let neu = xxx co2 ws 0
-  let neu1 = xxx co2 neu 1
-  let neu2 = xxx co2 neu1 2
-  let neu3 = xxx co2 neu2 3
-  let neu4 = xxx co2 neu3 4
-  print neu
-  print neu1
-  print neu2
-  print neu3
-  print neu4
--}
   let b = ogr*csr
   putTextLn $ "result is " <> show a <> " and " <> show b
   pure (a, b)
@@ -149,7 +121,6 @@ aoc2 = do
                             "up" -> (pos, dep - (fromMaybe 0 . readMaybe . toString . T.filter (/= '+') $ amount))
                             _ -> error "wrong input reading aoc2.dat"
                       ) (0,0) ls
-  print coord
   let a = uncurry (*) coord
       coor' :: (Int,Int,Int)
       coor' = foldl' (\(pos,dep,aim) line ->
@@ -161,7 +132,7 @@ aoc2 = do
                             "up" -> (pos, dep, aim - (fromMaybe 0 . readMaybe . toString . T.filter (/= '+') $ amount))
                             _ -> error "wrong input reading aoc2.dat"
                       ) (0,0,0) ls
-  print coor'
+
   let b = let (p,d,_) = coor' in p*d
   putTextLn $ "result is " <> show a <> " and " <> show b
   pure (a, b)

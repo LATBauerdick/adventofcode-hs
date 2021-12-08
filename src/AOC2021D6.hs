@@ -18,7 +18,6 @@ aoc6 = do
   ss <- readFileText "data/aoc6.dat"
   let lfs:: [Int]; lfs = readInt <$> T.splitOn "," ss
 
-  print lfs
   let step :: [Int] -> [Int]; step = foldr (\f fs -> if f == 0 then 8 : 6 : fs else f-1 : fs) []
   -- print . step $ lfs
   let allfs = foldl' (\fs _ -> step fs) lfs $ replicate 80 (0 :: Int)
@@ -39,11 +38,8 @@ aoc6 = do
             m2 = M.adjust (+ n0) 6 m1
         in m2
   let step0 :: Map Int Int; step0 = foldr (\i m -> M.adjust (+1) i m) cnts lfs
-  -- print $ lfs
-  -- print $ step0
-  -- print . iter $ step0
   let steps = take (80 + 1) $ iterate iter step0 -- +1 because fist entry is the original state
-  print . sum . M.elems . fromJust $ viaNonEmpty last steps
+  -- print . sum . M.elems . fromJust $ viaNonEmpty last steps
   let manysteps = take (256 + 1) $ iterate iter step0
 
   let b = sum . M.elems . fromJust $ viaNonEmpty last manysteps
