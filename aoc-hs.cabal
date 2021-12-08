@@ -25,7 +25,10 @@ source-repository head
 
 library
   exposed-modules:
-      AOC2021
+      AOC2021D1
+      AOC2021D2
+      AOC2021D3
+      AOC2021D4
       AOC2021D5
       AOC2021D6
       AOC2021D7

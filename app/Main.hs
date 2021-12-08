@@ -4,7 +4,7 @@ module Main where
 
 import Relude
 
-import AOC2021 ( aoc1
+import AOC2021D1 ( aoc1
                )
 
 main :: IO ()

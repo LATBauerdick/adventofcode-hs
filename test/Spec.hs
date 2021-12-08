@@ -10,11 +10,11 @@ import AOC2021D8  ( aoc8 )
 import AOC2021D7  ( aoc7 )
 import AOC2021D6  ( aoc6 )
 import AOC2021D5  ( aoc5 )
-import AOC2021  ( aoc1
-                , aoc2
-                , aoc3
-                , aoc4
-                )
+import AOC2021D4  ( aoc4 )
+import AOC2021D3  ( aoc3 )
+import AOC2021D2  ( aoc2 )
+import AOC2021D1  ( aoc1 )
+
 main :: IO ()
 
 main = do
