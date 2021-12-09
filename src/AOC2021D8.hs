@@ -5,9 +5,9 @@
 module AOC2021D8 ( aoc8 ) where
 
 import Data.Maybe (fromJust)
-import qualified Data.Map.Strict as M (insert, insertWith, empty, elems, restrictKeys, lookup)
-import qualified Data.Set as S (fromList, isSubsetOf)
-import qualified Data.List as L (sort, elem, intersect, find, lookup, length)
+import qualified Data.Map.Strict as M (insertWith, empty, elems, restrictKeys)
+import qualified Data.Set as S (fromList)
+import qualified Data.List as L (sort, intersect, find, lookup, length)
 import qualified Data.Text as T
 import Relude
 
@@ -49,13 +49,9 @@ aoc8 = do
 
       calc :: [Int] -> Int
       calc = fst . foldr (\i (s, f) -> (s+i*f, f*10)) (0,1)
+
       doLine :: [Text] -> Int
       doLine ws = calc . decode (drop 11 ws) . code . take 10 $ ws
-
-
-  print . map (code . take 10 . words) $ lines ss
-  print . map (drop 11 . words) $ lines ss
-  print . map (doLine . words) $ lines ss
 
   let b = sum . map (doLine . words) $ lines ss
 
