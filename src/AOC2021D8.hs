@@ -22,28 +22,29 @@ aoc8 = do
 
   let a = sum $ M.elems uniqueOutputs
 
-  let code :: [Text] -> [(Text, Int)]
-      code ts = mm where
-        pin = map (toText . L.sort . toString) . sortOn T.length $ ts
-        mm = foldl' (\m t -> xxx t m) [] pin
-        xxx :: Text -> [(Text, Int)] -> [(Text, Int)]
-        xxx t m =
+  let getCodes :: [Text] -> [(Text, Int)]
+      getCodes ts = foldl' patterns []
+                  . map (toText . L.sort . toString)
+                  . sortOn T.length $ ts where
+        patterns :: [(Text, Int)] -> Text -> [(Text, Int)]
+        patterns m t =
           case T.length t of
                     2 -> (t, 1) : m
                     3 -> (t, 7) : m
                     4 -> (t, 4) : m
                     5 -> let p7 = toString . fst . fromJust . L.find (\p -> snd p == 7) $ m
                              p4 = toString . fst . fromJust . L.find (\p -> snd p == 4) $ m
-                          in if (p7 `L.intersect` (toString t)) == p7 then (t, 3) : m
-                          else if L.length (p4 `L.intersect` (toString t))  == 2 then (t, 2) : m
+                          in if (p7 `L.intersect` toString t) == p7 then (t, 3) : m
+                          else if L.length (p4 `L.intersect` toString t)  == 2 then (t, 2) : m
                           else (t, 5) : m
                     6 -> let p7 = toString . fst . fromJust . L.find (\p -> snd p == 7) $ m
                              p3 = toString . fst . fromJust . L.find (\p -> snd p == 3) $ m
-                          in if not ((p7 `L.intersect` (toString t)) == p7) then (t, 6) : m
-                          else if (p3 `L.intersect` (toString t)) == p3 then (t, 9) : m
+                          in if p7 `L.intersect` toString t /= p7 then (t, 6) : m
+                          else if (p3 `L.intersect` toString t) == p3 then (t, 9) : m
                           else (t, 0) : m
                     7 -> (t, 8) : m
                     _ -> m
+
       decode :: [Text] -> [(Text, Int)] -> [Int]
       decode ts pat = map (\t -> fromJust $ L.lookup (toText . L.sort . toString $ t) pat) ts
 
@@ -51,7 +52,7 @@ aoc8 = do
       calc = fst . foldr (\i (s, f) -> (s+i*f, f*10)) (0,1)
 
       doLine :: [Text] -> Int
-      doLine ws = calc . decode (drop 11 ws) . code . take 10 $ ws
+      doLine ws = calc . decode (drop 11 ws) . getCodes . take 10 $ ws
 
   let b = sum . map (doLine . words) $ lines ss
 
