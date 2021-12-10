@@ -1,13 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+--{-# LANGUAGE NoImplicitPrelude #-}
 
 module AOC2021D9 ( aoc9 ) where
 
 import qualified Relude.Unsafe as Unsafe
-import qualified Data.List as L (elem, (\\), union, sort)
+import qualified Data.List as L ((\\), union)
 import qualified Data.Text as T
 import Data.Char (digitToInt)
-import Relude
+-- import Relude
 
 readInt :: Text -> Int -- crash if not an integer
 readInt = Unsafe.fromJust . readMaybe . toString . T.filter (/= '+')
@@ -48,7 +48,7 @@ aoc9 = do
       scan (cand, basin) = if null cand' then (cand', basin')
                                          else scan (cand', basin') where
         cand' = foldl' (\cs i -> if i `elem` basin then cs else cs `L.union` neighbors i ) [] cand L.\\ cand
-        basin' = L.sort $ basin `L.union` cand
+        basin' = sort $ basin `L.union` cand
 
   -- print . map neighbors $ mins
 
