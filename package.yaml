@@ -36,6 +36,10 @@ dependencies:
 library:
   source-dirs: src
   ghc-options: -Wall -fno-warn-unused-binds
+  mixins:   base hiding (Prelude)
+          , relude (Relude as Prelude)
+          , relude
+
 
 executables:
   aoc-hs-exe:

@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 3.6
 
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
@@ -12,7 +12,7 @@ bug-reports:    https://github.com/LATBauerdick/aoc-hs/issues
 author:         LATBauerdick
 maintainer:     github@bauerdick.org
 copyright:      2021 LATBauerdick
-license:        BSD3
+license:        BSD-3-Clause
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
@@ -34,6 +34,7 @@ library
       AOC2021D7
       AOC2021D8
       AOC2021D9
+      AOC2021D10
   other-modules:
       Paths_aoc_hs
   hs-source-dirs:
@@ -51,6 +52,10 @@ library
     , relude
     , split
     , text
+  mixins:
+            base hiding (Prelude)
+          , relude (Relude as Prelude)
+          , relude
   default-language: Haskell2010
 
 executable aoc-hs-exe
@@ -73,6 +78,10 @@ executable aoc-hs-exe
     , relude
     , split
     , text
+  mixins:
+            base hiding (Prelude)
+          , relude (Relude as Prelude)
+          , relude
   default-language: Haskell2010
 
 test-suite aoc-hs-test
@@ -96,4 +105,8 @@ test-suite aoc-hs-test
     , relude
     , split
     , text
+  mixins:
+            base hiding (Prelude)
+          , relude (Relude as Prelude)
+          , relude
   default-language: Haskell2010
