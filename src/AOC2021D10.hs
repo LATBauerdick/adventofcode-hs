@@ -1,11 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module AOC2021D10 ( aoc10 ) where
 
 import qualified Relude.Unsafe as Unsafe
 import qualified Data.Text as T
-import Relude
 
 readInt :: Text -> Int -- crash if not an integer
 readInt = Unsafe.fromJust . readMaybe . toString . T.filter (/= '+')

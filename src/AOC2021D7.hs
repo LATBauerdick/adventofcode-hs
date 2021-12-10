@@ -1,12 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module AOC2021D7 ( aoc7 ) where
 
 import Data.Maybe (fromJust)
 import qualified Data.List as L (minimum, maximum)
 import qualified Data.Text as T
-import Relude
 
 readInt :: Text -> Int -- crash if not an integer
 readInt = fromJust . readMaybe . toString . T.filter (/= '+')

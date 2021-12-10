@@ -1,8 +1,6 @@
-{-# LANGUAGE NoImplicitPrelude, OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Main where
-
-import Relude
 
 import AOC2021D1 ( aoc1
                )

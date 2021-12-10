@@ -1,6 +1,5 @@
 
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module AOC2021D6 ( aoc6
                  ) where
@@ -8,7 +7,6 @@ module AOC2021D6 ( aoc6
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (elems, insert, fromList, adjust)
 import qualified Data.Text as T
-import Relude
 
 readInt :: Text -> Int -- crash if not an integer
 readInt = fromJust . readMaybe . toString . T.filter (/= '+')

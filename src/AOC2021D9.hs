@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
---{-# LANGUAGE NoImplicitPrelude #-}
 
 module AOC2021D9 ( aoc9 ) where
 
@@ -7,7 +6,6 @@ import qualified Relude.Unsafe as Unsafe
 import qualified Data.List as L ((\\), union)
 import qualified Data.Text as T
 import Data.Char (digitToInt)
--- import Relude
 
 readInt :: Text -> Int -- crash if not an integer
 readInt = Unsafe.fromJust . readMaybe . toString . T.filter (/= '+')

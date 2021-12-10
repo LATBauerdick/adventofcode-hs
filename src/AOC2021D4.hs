@@ -1,12 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module AOC2021D4  ( aoc4 ) where
 
 import Data.List.Split (chunksOf)
 import Data.Maybe (fromJust)
 import qualified Data.Text as T
-import Relude
 
 aoc4 :: IO (Int, Int)
 aoc4 = do
