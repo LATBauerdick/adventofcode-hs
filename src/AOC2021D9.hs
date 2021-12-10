@@ -31,11 +31,6 @@ aoc9 = do
 
   let a = sum . map risk $ [0 .. tl - 1]
 
-  -- for each minimum point, empty candidates and basin lists
-  --  put this point on basin list
-  --  look at this point's list of neighbors that are less than 9
-  --    if neighbor not already in basin, put on canditates list
-  --    get next canditate and start again
   let mins :: [Int]
       mins = mapMaybe (\i -> if risk i /= 0 then Just i else Nothing) [0 .. tl - 1]
       neighbors :: Int -> [Int]
