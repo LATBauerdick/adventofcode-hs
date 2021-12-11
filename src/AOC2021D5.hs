@@ -1,4 +1,3 @@
-
 {-# LANGUAGE OverloadedStrings #-}
 
 module AOC2021D5 ( aoc5
@@ -22,7 +21,7 @@ aoc5 = do -- thanks for parsing help to https://github.com/BartoszMilewski
                   [x0,y0] = T.splitOn "," sp1
                   [x1,y1] = T.splitOn "," sp2
               in ((readInt x0, readInt y0), (readInt x1, readInt y1))
-      parseLn x = error "bad input from data/aoc5.,dat"
+      parseLn _ = error "bad input from data/aoc5.dat"
   let notDiag :: Segment -> Bool; notDiag ((x0,y0),(x1,y1)) = x0 == x1 || y0 == y1
   let mkLine :: Segment -> [Point]
       mkLine ((x0, y0), (x1, y1)) =

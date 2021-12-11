@@ -1,4 +1,3 @@
-
 {-# LANGUAGE OverloadedStrings #-}
 
 module AOC2021D8 ( aoc8 ) where

@@ -48,8 +48,6 @@ aoc9 = do
         cand' = foldl' (\cs i -> if i `elem` basin then cs else cs `L.union` neighbors i ) [] cand L.\\ cand
         basin' = sort $ basin `L.union` cand
 
-  -- print . map neighbors $ mins
-
   let b = foldl' (*) 1 . drop (length mins - 3) . sort
         . map (\i -> length . snd $ scan ([i], [])) $ mins
 
