@@ -25,10 +25,6 @@ aoc10 = do
   ss <- readFileText "data/aoc10.dat"
   let ls = map toString . lines $ ss
 
-  let xxx :: String; xxx = "{([(<{}[<>[]}>{[]{[(<()>"
-      -- xxx = Unsafe.head . drop 2 $ ls
-  -- print xxx
-
   let isOpening :: Char -> Bool; isOpening c = c `elem` ['<','[','(','{']
   let isClosing :: Char -> Char -> Bool; isClosing o c = case o of
                                                            '<' -> c == '>'
@@ -48,7 +44,7 @@ aoc10 = do
                                                           (Just o, st') ->
                                                              if isClosing o c then (st', Nothing : l) else (st', Just ( value c ): l)
                                                           _ -> (stEmpty , error "bad input aoc10" )
-                        ) (stEmpty, []) $ cs
+                        ) (stEmpty, []) cs
   let res = map parse ls
 
   let a = sum . concatMap (catMaybes . snd) $ res
@@ -59,8 +55,8 @@ aoc10 = do
                                                                    '{'-> 3
                                                                    '<'-> 4
                                                                    _ -> error "bad input aoc10")
-                                                    ) 0 $ cs
-  let vs = sort . map values . mapMaybe (\(aa,bb) -> if catMaybes bb == [] then let Stack s = aa in Just s else Nothing)  $ res
+                                                    ) 0 cs
+  let vs = sort . map values . mapMaybe (\(aa,bb) -> if null (catMaybes bb) then let Stack s = aa in Just s else Nothing)  $ res
 
   let b = Unsafe.head . drop (length vs `div` 2) $ vs
 
