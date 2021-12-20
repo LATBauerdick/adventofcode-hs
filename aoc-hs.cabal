@@ -38,6 +38,7 @@ library
       AOC2021D11
       AOC2021D12
       AOC2021D14
+      AOC2021D15
   other-modules:
       Paths_aoc_hs
   hs-source-dirs:

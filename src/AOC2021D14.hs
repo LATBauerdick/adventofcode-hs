@@ -7,8 +7,8 @@ import qualified Data.List as L
 import qualified Relude.Unsafe as Unsafe
 import qualified Data.Text as T
 
-debug :: a -> Text -> a
-debug a b = trace (toString b) a
+-- debug :: a -> Text -> a
+-- debug a b = trace (toString b) a
 
 readInt :: Text -> Int -- crash if not an integer
 readInt = Unsafe.fromJust . readMaybe . toString . T.filter (/= '+')
@@ -43,7 +43,7 @@ aoc14 = do
       doStep :: Text -> Int -> Map Text Int -> Map Text Int
       doStep k i m = let (p0,p1) = Unsafe.fromJust (M.lookup k segt)
                       in  if i > 0
-                             then M.adjust (\ii -> ii-i) k . M.adjust (+i) p1 . M.adjust (+i) p0 $ m `debug` ("xxx " <> k <> p0 <> p1)
+                             then M.adjust (\ii -> ii-i) k . M.adjust (+i) p1 . M.adjust (+i) p0 $ m
                              else m
 
   let poly40 =  Unsafe.last . take (40+1) . iterate step' $ step0
