@@ -55,6 +55,7 @@ library
     , relude
     , split
     , text
+    , raw-strings-qq
   mixins:
             base hiding (Prelude)
           , relude (Relude as Prelude)
