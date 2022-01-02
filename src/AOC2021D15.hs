@@ -7,6 +7,9 @@ import qualified Data.List as L
 import qualified Relude.Unsafe as Unsafe
 import qualified Data.Text as T
 import qualified Text.RawString.QQ as TQ
+import qualified Data.Map.Strict as M
+import qualified Data.Set as S
+
 
 debug :: a -> Text -> a
 debug a b = trace (toString b) a
@@ -26,7 +29,7 @@ summarize (Node a t1 t2) = do
 aoc15 :: IO (Int, Int)
 aoc15 = do
   ss <- readFileText "data/aoc15.dat"
-  let ss :: Text; ss =
+  let ss0 :: Text; ss0 =
         [TQ.r|1163751742
 1381373672
 2136511328
@@ -43,25 +46,63 @@ aoc15 = do
       tl = nl*ll
       risks = map (\c -> ord c - ord '0') . concatMap toString $ ls
 
-      neighbors :: Int -> (Maybe Int, Maybe Int)
-      neighbors i = (r,d) where
-                    d = if i < tl-nl then Just (i+ll) else Nothing
-                    r = if i `mod` ll /= (ll - 1) then Just (i+1) else Nothing
-
 -- brute force works for the 10x10 example, but blows up for the larger case
-      buildNode :: Int -> Int -> Tree Int
-      buildNode s i = let a = Unsafe.at i risks; s' = s+a
-                       in if s' > nl*ll*3 then Leaf else
-                            case neighbors i of
-                              (Just r, Just d)   -> Node a (buildNode s' r) (buildNode s' d)
-                              (Just r, Nothing)  -> Node a (buildNode s' r) Leaf
-                              (Nothing, Just d)  -> Node a Leaf (buildNode s' d)
-                              (Nothing, Nothing) -> Node 998 Leaf Leaf
+      -- neighbors :: Int -> (Maybe Int, Maybe Int)
+      -- neighbors i = (r,d) where
+      --               d = if i < tl-nl then Just (i+ll) else Nothing
+      --               r = if i `mod` ll /= (ll - 1) then Just (i+1) else Nothing
+      -- buildNode :: Int -> Int -> Tree Int
+      -- buildNode s i = let a = Unsafe.at i risks; s' = s+a
+      --                  in if s' > nl*ll*3 then Leaf else
+      --                       case neighbors i of
+      --                         (Just r, Just d)   -> Node a (buildNode s' r) (buildNode s' d)
+      --                         (Just r, Nothing)  -> Node a (buildNode s' r) Leaf
+      --                         (Nothing, Just d)  -> Node a Leaf (buildNode s' d)
+      --                         (Nothing, Nothing) -> Node 998 Leaf Leaf
 
   print risks
-  let sm = summarize . buildNode 0 $ 0
-  let mn = L.minimum . mapMaybe (\rs -> if Unsafe.last rs == 998 then Just (sum rs - 998) else Nothing) $ sm
-  let a = Unsafe.last risks - Unsafe.head risks + mn
+  let
+      neighbors' :: Int -> [Int]
+      neighbors' i = catMaybes $ [u,l,r,d] where
+                    u = if i > (ll-1) then Just (i-ll) else Nothing
+                    d = if i < tl-nl then Just (i+ll) else Nothing
+                    l = if i `mod` ll /= 0 then Just (i-1) else Nothing
+                    r = if i `mod` ll /= (ll - 1) then Just (i+1) else Nothing
+      large :: Int; large = 99999999
+      nodes :: Set (Int,Int)
+      nodes = S.insert (0,0) $ S.fromList [(large,n) | n <- [1..(tl-1)] ]
+      nextNode :: (Set (Int,Int), Set(Int,Int)) -> (Set (Int,Int),Set (Int,Int))
+      nextNode (ns,nvs) =
+        let (d,i) = Unsafe.fromJust . S.lookupGE (0,0) $ ns
+            thisNode :: Int -> (Int,Int)
+            thisNode ii = Unsafe.fromJust . S.lookupGE (ii,0) $ nvs
+            notVisited ii = case S.lookupGE (ii,0) nvs of
+                      Nothing -> Nothing
+                      Just (iii,_) -> if iii == ii then Just iii else Nothing
+            nbs :: [Int]
+            nbs = mapMaybe notVisited . neighbors' $ i
+            ns' = foldr (\ii nns -> let (_,r) = thisNode ii
+                                        (dd,_) = Unsafe.fromJust . S.lookupGE (0,0) . S.filter (\(_,iii) -> iii==ii) $ nns
+                                     in if d+r<dd
+                                           then S.insert (d+r,ii) . S.delete (dd,ii) $ nns
+                                           else nns
+                        ) ns $ nbs
+         in if i == tl-1
+              then (S.singleton (d,i), S.empty)
+              else if notVisited i == Just i
+                then (S.delete (d,i) ns', S.delete (thisNode i) nvs)
+                else (S.delete (d,i) ns, nvs)
+      notVisited :: Set (Int,Int)
+      notVisited = S.fromList . zip [0..] $ risks
+  print (nodes, notVisited)
+  print . nextNode $ (nodes, notVisited)
+  print . nextNode . nextNode $ (nodes, notVisited)
+  print . foldr (\_ (ns,nvs) -> nextNode (ns,nvs)) (nodes,notVisited) $ [0..(2*tl-1)]
+  let a = fst . Unsafe.fromJust . S.lookupGE (0,0) . fst . foldr (\_ (ns,nvs) -> nextNode (ns,nvs)) (nodes,notVisited) $ [0..(2*tl-1)]
+  --
+  -- let sm = summarize . buildNode 0 $ 0
+  -- let mn = L.minimum . mapMaybe (\rs -> if Unsafe.last rs == 998 then Just (sum rs - 998) else Nothing) $ sm
+  -- let a = Unsafe.last risks - Unsafe.head risks + mn
 
 -- instead, draw one path and then vary the path only accepting less risky
 -- paths?
