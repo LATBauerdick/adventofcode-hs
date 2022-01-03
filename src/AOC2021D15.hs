@@ -59,56 +59,75 @@ aoc15 = do
       --                         (Just r, Nothing)  -> Node a (buildNode s' r) Leaf
       --                         (Nothing, Just d)  -> Node a Leaf (buildNode s' d)
       --                         (Nothing, Nothing) -> Node 998 Leaf Leaf
-
-  print risks
-  let
-      neighbors' :: Int -> [Int]
-      neighbors' i = catMaybes $ [u,l,r,d] where
-                    u = if i > (ll-1) then Just (i-ll) else Nothing
-                    d = if i < tl-nl then Just (i+ll) else Nothing
-                    l = if i `mod` ll /= 0 then Just (i-1) else Nothing
-                    r = if i `mod` ll /= (ll - 1) then Just (i+1) else Nothing
-      large :: Int; large = 99999999
-      nodes :: Set (Int,Int)
-      nodes = S.insert (0,0) $ S.fromList [(large,n) | n <- [1..(tl-1)] ]
-      nextNode :: (Set (Int,Int), Set(Int,Int)) -> (Set (Int,Int),Set (Int,Int))
-      nextNode (ns,nvs) =
-        let (d,i) = Unsafe.fromJust . S.lookupGE (0,0) $ ns
-            thisNode :: Int -> (Int,Int)
-            thisNode ii = Unsafe.fromJust . S.lookupGE (ii,0) $ nvs
-            notVisited ii = case S.lookupGE (ii,0) nvs of
-                      Nothing -> Nothing
-                      Just (iii,_) -> if iii == ii then Just iii else Nothing
-            nbs :: [Int]
-            nbs = mapMaybe notVisited . neighbors' $ i
-            ns' = foldr (\ii nns -> let (_,r) = thisNode ii
-                                        (dd,_) = Unsafe.fromJust . S.lookupGE (0,0) . S.filter (\(_,iii) -> iii==ii) $ nns
-                                     in if d+r<dd
-                                           then S.insert (d+r,ii) . S.delete (dd,ii) $ nns
-                                           else nns
-                        ) ns $ nbs
-         in if i == tl-1
-              then (S.singleton (d,i), S.empty)
-              else if notVisited i == Just i
-                then (S.delete (d,i) ns', S.delete (thisNode i) nvs)
-                else (S.delete (d,i) ns, nvs)
-      notVisited :: Set (Int,Int)
-      notVisited = S.fromList . zip [0..] $ risks
-  print (nodes, notVisited)
-  print . nextNode $ (nodes, notVisited)
-  print . nextNode . nextNode $ (nodes, notVisited)
-  print . foldr (\_ (ns,nvs) -> nextNode (ns,nvs)) (nodes,notVisited) $ [0..(2*tl-1)]
-  let a = fst . Unsafe.fromJust . S.lookupGE (0,0) . fst . foldr (\_ (ns,nvs) -> nextNode (ns,nvs)) (nodes,notVisited) $ [0..(2*tl-1)]
   --
   -- let sm = summarize . buildNode 0 $ 0
   -- let mn = L.minimum . mapMaybe (\rs -> if Unsafe.last rs == 998 then Just (sum rs - 998) else Nothing) $ sm
   -- let a = Unsafe.last risks - Unsafe.head risks + mn
 
--- instead, draw one path and then vary the path only accepting less risky
--- paths?
---
+  let
+      neighbors' :: Int -> [Int]
+      neighbors' i = catMaybes [u,l,r,d] where
+                    u = if i > (ll-1) then Just (i-ll) else Nothing
+                    d = if i < tl-nl then Just (i+ll) else Nothing
+                    l = if i `mod` ll /= 0 then Just (i-1) else Nothing
+                    r = if i `mod` ll /= (ll - 1) then Just (i+1) else Nothing
+      large :: Int; large = 99999999
+      pq :: Set (Int,Int)
+      pq = S.insert (0,0) $ S.fromList [(large,n) | n <- [1..(tl-1)] ]
+      nextNode :: (Set (Int,Int), Set Int) -> (Set (Int,Int), Set Int)
+      nextNode (ns,vs) =
+        let (d,i) = Unsafe.fromJust . S.lookupGE (0,0) $ ns
+            nbs :: [Int]
+            nbs = mapMaybe (\ii -> if S.member ii vs then Nothing else Just ii) . neighbors' $ i
+            ns' = foldr (\ii nns -> let r = Unsafe.at ii risks
+                                     in S.insert (d+r,ii) nns
+                        ) ns nbs
+         in if i == tl-1
+              then (S.singleton (d,i), S.empty)
+              else if S.member i vs
+                then (S.delete (d,i) ns, vs)
+                else (S.delete (d,i) ns', S.insert i vs)
+      visited :: Set Int
+      visited = S.empty
+  print . foldr (\_ (ns,vs) -> nextNode (ns,vs)) (pq,visited) $ [0..(2*tl-1)]
+  let a = fst . Unsafe.fromJust . S.lookupGE (0,0) . fst . foldr (\_ (ns,vs) -> nextNode (ns,vs)) (pq,visited) $ [0..(2*tl-1)]
 
-  let b = 1
+  let tod :: Text -> [Int]; tod = map (\c -> ord c - ord '0') . toString
+  let off o = map (\i -> let x = i+o in if x>9 then x-9 else x)
+  let m0 = concat . foldr (\ds xs -> off 0 ds : off 1 ds : off 2 ds : off 3 ds : off 4 ds : xs) [] . map tod $ ls
+  let risks' = concat [off 0 m0, off 1 m0, off 2 m0, off 3 m0, off 4 m0]
+      ll' = 5*ll
+      nl' = 5*nl
+      tl' = 25*tl
+  let
+      neighbors' :: Int -> [Int]
+      neighbors' i = catMaybes [u,l,r,d] where
+                    u = if i > (ll'-1) then Just (i-ll') else Nothing
+                    d = if i < tl'-nl' then Just (i+ll') else Nothing
+                    l = if i `mod` ll' /= 0 then Just (i-1) else Nothing
+                    r = if i `mod` ll' /= (ll' - 1) then Just (i+1) else Nothing
+      large :: Int; large = 99999999
+      pq :: Set (Int,Int)
+      pq = S.insert (0,0) $ S.fromList [(large,n) | n <- [1..(tl'-1)] ]
+      nextNode :: (Set (Int,Int), Set Int) -> (Set (Int,Int), Set Int)
+      nextNode (ns,vs) =
+        let (d,i) = Unsafe.fromJust . S.lookupGE (0,0) $ ns
+            nbs :: [Int]
+            nbs = mapMaybe (\ii -> if S.member ii vs then Nothing else Just ii) . neighbors' $ i
+            ns' = foldr (\ii nns -> let r = Unsafe.at ii risks'
+                                     in S.insert (d+r,ii) nns
+                        ) ns nbs
+         in if i == tl'-1
+              then (S.singleton (d,i), S.empty)
+              else if S.member i vs
+                then (S.delete (d,i) ns, vs)
+                else (S.delete (d,i) ns', S.insert i vs)
+      visited :: Set Int
+      visited = S.empty
+  print . foldr (\_ (ns,vs) -> nextNode (ns,vs)) (pq,visited) $ [0..(2*tl'-1)]
+  let b = fst . Unsafe.fromJust . S.lookupGE (0,0) . fst . foldr (\_ (ns,vs) -> nextNode (ns,vs)) (pq,visited) $ [0..(2*tl'-1)]
+
+  -- print risks'
 
   putTextLn $ "result is " <> show a <> " and " <> show b
   pure (a, b)

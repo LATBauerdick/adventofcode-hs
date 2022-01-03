@@ -82,5 +82,5 @@ spec =
 
     it "test running aoc15" $ do
       x <- aoc15
-      x `shouldBe` (0,0)
+      x `shouldBe` (717,2993)
 
