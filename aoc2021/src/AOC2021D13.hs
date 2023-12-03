@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module AOC2021D12 ( aoc12 ) where
+module AOC2021D13 ( aoc13 ) where
 
 import qualified Relude.Unsafe as Unsafe
 import qualified Data.Text as T
