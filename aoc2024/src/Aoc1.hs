@@ -1,9 +1,9 @@
 module Aoc1 (aoc1) where
 
+import qualified Data.List as L (foldl)
+import qualified Data.Map as M (Map, empty, findWithDefault, insertWith)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T
-
--- import Data.Char (isDigit)
+import qualified Data.Text as T (filter, lines, words)
 
 readInt :: Text -> Int -- crash if not an integer
 readInt = fromJust . readMaybe . toString . T.filter (/= '+')
@@ -19,15 +19,13 @@ parseLine line = case T.words line of
 aoc1 :: IO (Int, Int)
 aoc1 = do
   fc <- readFileBS "data/aoc1.dat"
-  -- testHSlurp =<< readFileText "data/aoc1.dat"
-  -- print . T.lines $ decodeUtf8 fc
   let ps = mapMaybe parseLine . T.lines $ decodeUtf8 fc
-  let (fs, ss) = unzip ps
-  let (sfs, sss) = (sort fs, sort ss)
-  let a = sum $ zipWith (\x y -> abs (x - y)) sfs sss
+      (fs, ss) = unzip ps
+      (sfs, sss) = (sort fs, sort ss)
+      a = sum $ zipWith (\x y -> abs (x - y)) sfs sss
 
-  -- let a = sum . fmap (\(a,b) -> a+b ). zip .
+  let m :: M.Map Int Int
+      m = L.foldl (\m' x -> M.insertWith (+) x 1 m') M.empty ss
+      b = L.foldl (\cnt k -> cnt + k * M.findWithDefault 0 k m) 0 fs
 
-  -- putTextLn $ "debug " <> show ii
-  -- putTextLn $ "result is " <> show (a,b)
-  pure (a, 0)
+  pure (a, b)
