@@ -1,0 +1,61 @@
+# spec-version:        0.36.0
+name:                aoc
+version:             0.1.0.0
+github:              "LATBauerdick/adventofcode-hs"
+license:             BSD3
+author:              "LATBauerdick"
+maintainer:          "github@bauerdick.org"
+copyright:           "2023 LATBauerdick"
+
+# extra-source-files:
+# - README.md
+# - ChangeLog.md
+
+description:         Please see the README on GitHub at <https://github.com/LATBauerdick/adventofcode-hs#readme>
+
+default-extensions:
+  - NoImplicitPrelude
+  - OverloadedStrings
+
+dependencies:
+- base >= 4.7 && < 5
+- relude
+- hspec
+- QuickCheck
+- text
+- containers
+- split
+- Unique
+
+library:
+  source-dirs: src
+  ghc-options: -Wall -fno-warn-unused-binds
+  mixins:   base hiding (Prelude)
+          , relude (Relude as Prelude)
+          , relude
+
+
+executables:
+  aoc-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - relude
+    - aoc
+
+tests:
+  aoc-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - aoc
+    - relude
