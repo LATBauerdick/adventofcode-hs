@@ -8,6 +8,10 @@ import qualified Data.Text as T (filter, lines, words)
 readInt :: Text -> Int -- crash if not an integer
 readInt = fromJust . readMaybe . toString . T.filter (/= '+')
 
+slurp :: FilePath -> IO [Text]
+-- slurp fn = readFileBS fn <&> T.lines . decodeUtf8
+slurp fn = T.lines . decodeUtf8 <$> readFileBS fn
+
 parseLine :: Text -> Maybe (Int, Int)
 parseLine line = case T.words line of
   [x, y] -> do
@@ -18,11 +22,13 @@ parseLine line = case T.words line of
 
 aoc1 :: IO (Int, Int)
 aoc1 = do
-  fc <- readFileBS "data/aoc1.dat"
-  let ps = mapMaybe parseLine . T.lines $ decodeUtf8 fc
+  ls <- slurp "data/aoc1.dat"
+
+  let ps = mapMaybe parseLine ls
       (fs, ss) = unzip ps
       (sfs, sss) = (sort fs, sort ss)
       a = sum $ zipWith (\x y -> abs (x - y)) sfs sss
+      xx = ss
 
   let m :: M.Map Int Int
       m = L.foldl (\m' x -> M.insertWith (+) x 1 m') M.empty ss
