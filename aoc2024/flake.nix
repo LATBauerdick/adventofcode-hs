@@ -16,6 +16,7 @@
             type = "app";
             program = "${aoc}/bin/aoc";
           };
+          packages.test = import ./test.nix { inherit system; };
         }
     );
 }
