@@ -7,7 +7,7 @@ module Aoc3 (aoc3) where
 
 import qualified Data.List as L (foldl, foldl1, foldr1, length)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (filter, lines, splitOn)
+import qualified Data.Text as T (breakOnAll, filter, lines, splitOn)
 
 debug :: a -> Text -> a
 debug a t = flip trace a (toString t)
@@ -29,15 +29,18 @@ dropNth xs n = take n xs ++ drop (n + 1) xs
 
 -------------------------------------------------------------------
 
-parseLine :: Text -> Bool
-parseLine = const False
+parseLine :: Text -> Int
+parseLine l = p
+ where
+  terms' = T.splitOn "mul(" l
+  terms = T.breakOnAll "mul(" l
+  p = 0 `debug` show terms
 
 aoc3 :: IO (Int, Int)
 aoc3 = do
   ls <- slurp "data/aoc3.dat" <&> take 1
-  print ls
   print . parseLine . fromJust . viaNonEmpty head $ ls
-  let a = L.length . fmap parseLine $ ls
-  let b = L.length . fmap parseLine $ ls
+  let a = sum . fmap parseLine $ ls
+  let b = sum . fmap parseLine $ ls
 
   pure (a, b)
