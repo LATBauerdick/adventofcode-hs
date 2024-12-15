@@ -3,11 +3,12 @@ module Aoc3 (aoc3) where
 -- stripPrefix
 -- splitOn "aaa"  "aaaXaaaXaaaXaaa" -> ["","X","X","X",""]
 -- breakOnAll "/" "a/b/c/" -> [("a","/b/c/"),("a/b","/c/"),("a/b/c","/")]
+-- breakOn "::" "a::b::c" -> ("a","::b::c")
 -- uncons :: Text -> Maybe (Char, Text) Returns the first character and rest of a Text, or Nothing if empty.
 
 import qualified Data.List as L (foldl, foldl1, foldr1, length)
 import Data.Maybe (fromJust)
-import qualified Data.Text as T (breakOnAll, filter, lines, splitOn)
+import qualified Data.Text as T (breakOn, breakOnAll, drop, filter, lines, splitOn)
 
 debug :: a -> Text -> a
 debug a t = flip trace a (toString t)
@@ -28,19 +29,33 @@ dropNth :: [a] -> Int -> [a]
 dropNth xs n = take n xs ++ drop (n + 1) xs
 
 -------------------------------------------------------------------
+terms :: Text -> [Int]
+terms =
+  mapMaybe
+    ( (\(a, b) -> (*) <$> a <*> b)
+        . bimap readMaybeInt (readMaybeInt . T.drop 1)
+        . T.breakOn ","
+        . fst
+        . T.breakOn ")"
+        . T.drop 4
+        . snd
+    )
+    . T.breakOnAll "mul("
 
 parseLine :: Text -> Int
-parseLine l = p
+parseLine = sum . terms
+
+parseLine' :: Text -> Int
+parseLine' l = p
  where
-  terms' = T.splitOn "mul(" l
-  terms = T.breakOnAll "mul(" l
-  p = 0 `debug` show terms
+  dos = T.breakOnAll "don't()" l
+  t = terms l `debug` show dos
+  p = L.length t
 
 aoc3 :: IO (Int, Int)
 aoc3 = do
   ls <- slurp "data/aoc3.dat" <&> take 1
-  print . parseLine . fromJust . viaNonEmpty head $ ls
+  print . parseLine' . fromJust . viaNonEmpty head $ ls
   let a = sum . fmap parseLine $ ls
-  let b = sum . fmap parseLine $ ls
-
+  let b = L.length . fmap parseLine' $ ls
   pure (a, b)
