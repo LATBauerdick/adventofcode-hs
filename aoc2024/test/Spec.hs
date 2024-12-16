@@ -18,7 +18,7 @@ spec =
   describe "AOC 2024" $ do
     it "-----------test running aoc3" $ do
       x <- aoc3
-      x `shouldBe` (0, 0)
+      x `shouldBe` (157621318, 79845780)
     it "-----------test running aoc2" $ do
       x <- aoc2
       x `shouldBe` (356, 413)
