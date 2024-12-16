@@ -5,6 +5,7 @@ module Main (main) where
 import Test.Hspec (Spec, describe, hspec, it, shouldBe)
 import Test.QuickCheck (property)
 
+import Aoc4 (aoc4)
 import Aoc3 (aoc3)
 import Aoc2 (aoc2)
 import Aoc1 (aoc1)
@@ -16,6 +17,9 @@ main = do
 spec :: Spec
 spec =
   describe "AOC 2024" $ do
+    it "-----------test running aoc3" $ do
+      x <- aoc4
+      x `shouldBe` (0, 0)
     it "-----------test running aoc3" $ do
       x <- aoc3
       x `shouldBe` (157621318, 79845780)
