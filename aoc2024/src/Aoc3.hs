@@ -48,14 +48,32 @@ parseLine = sum . terms
 parseLine' :: Text -> Int
 parseLine' l = p
  where
-  dos = T.breakOnAll "don't()" l
-  t = terms l `debug` show dos
-  p = L.length t
+  dropToDo :: Text -> Text
+  dropToDo = T.drop 4 . snd . T.breakOn "do()"
+  reduce :: ([Int], Text) -> ([Int], Text)
+  reduce (t, r) = bimap ((++) t . terms) dropToDo . T.breakOn "don't()" $ r
+  -- (t0, r0) = reduce ([], l)
+  -- (t1, r1) = reduce (t0, r0)
+  -- (t2, r2) = reduce (t1, r1)
+  doReduce :: ([Int], Text) -> ([Int], Text)
+  doReduce (t, r)
+    | r == "" = (t, r) `debug` show (t, sum t, r)
+    | otherwise = doReduce . reduce $ (t, r) -- `debug` show (t, sum t, r)
+  p = sum . fst . doReduce $ ([], l)
 
 aoc3 :: IO (Int, Int)
 aoc3 = do
-  ls <- slurp "data/aoc3.dat" <&> take 1
+  ls <- slurp "data/aoc3.dat" <&> drop 1
   print . parseLine' . fromJust . viaNonEmpty head $ ls
   let a = sum . fmap parseLine $ ls
-  let b = L.length . fmap parseLine' $ ls
+  let b = sum . fmap parseLine' $ ls
+  print . fmap parseLine' $ ls
   pure (a, b)
+
+-- 15583044
+-- 18644260
+-- 8788325
+-- 19282189
+-- 19951739
+-- 5294156
+--
