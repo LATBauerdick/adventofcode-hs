@@ -2,9 +2,9 @@
 
 module Main where
 
-import Aoc4 (
-  aoc4,
+import Aoc5 (
+  aoc5,
  )
 
 main :: IO ()
-main = aoc4 >>= print
+main = aoc5 >>= print
