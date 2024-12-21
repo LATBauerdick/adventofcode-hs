@@ -21,16 +21,30 @@ readMaybeInts l = map readMaybeInt $ T.splitOn " " l
 
 -------------------------------------------------------------------
 
-parseLine :: Text -> Int
-parseLine l = n
+checkRules :: [(Int, Int)] -> [Int] -> Bool
+checkRules rules ps = c
  where
-  n = n0 + n1
-  n0 = L.length . T.breakOnAll "XMAS" $ l
-  n1 = L.length . T.breakOnAll "SAMX" $ l
+  c = True
 
 aoc5 :: IO (Int, Int)
 aoc5 = do
-  ls <- slurp "data/aoc5.dat" <&> drop 28
+  -- ls' <- slurp "data/aoc5.dat" <&> take 1176 . drop 28
+  -- ls <- slurp "data/aoc5.dat" <&> drop 1205
+  ls' <- slurp "data/aoc5.dat" <&> take 21
+  ls <- slurp "data/aoc5.dat" <&> take 6 . drop 22
+  let rs =
+        fmap
+          ( bimap readInt (readInt . T.drop 1)
+              . T.breakOn "|"
+          )
+          ls'
+
+  let ps = fmap (mapMaybe readMaybeInt . T.splitOn ",") $ ls
+  print rs
+  print ps
+
+  print . fmap (checkRules rs) $ ps
+
   let a = 0
   let b = 0
   pure (a, b)
