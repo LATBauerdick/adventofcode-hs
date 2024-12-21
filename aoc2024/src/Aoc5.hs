@@ -1,6 +1,6 @@
 module Aoc5 (aoc5) where
 
-import Data.List as L (length, (!!))
+import Data.List as L (and, break, length, (!!))
 import Data.Maybe (Maybe, catMaybes, fromJust, mapMaybe)
 import qualified Data.Text as T (breakOn, breakOnAll, drop, filter, index, intercalate, length, lines, splitOn, transpose)
 
@@ -21,10 +21,29 @@ readMaybeInts l = map readMaybeInt $ T.splitOn " " l
 
 -------------------------------------------------------------------
 
-checkRules :: [(Int, Int)] -> [Int] -> Bool
+checkRules :: [(Int, Int)] -> [Int] -> Int
 checkRules rules ps = c
  where
-  c = True
+  c =
+    if all
+      ( \(f, s) ->
+          not ((f `elem` ps) && (elem s . takeWhile (/= f) $ ps))
+      )
+      rules
+      then ps !! (length ps `div` 2)
+      else 0
+
+reordered :: [(Int, Int)] -> [Int] -> Int
+reordered rules ps = c
+ where
+  c =
+    if all
+      ( \(f, s) ->
+          not ((f `elem` ps) && (elem s . takeWhile (/= f) $ ps))
+      )
+      rules
+      then 0
+      else 1
 
 aoc5 :: IO (Int, Int)
 aoc5 = do
@@ -39,12 +58,15 @@ aoc5 = do
           )
           ls'
 
-  let ps = fmap (mapMaybe readMaybeInt . T.splitOn ",") $ ls
+  let ps = fmap (mapMaybe readMaybeInt . T.splitOn ",") ls
   print rs
   print ps
 
   print . fmap (checkRules rs) $ ps
 
-  let a = 0
-  let b = 0
+  let a = sum . fmap (checkRules rs) $ ps
+
+  print . fmap (reordered rs) $ ps
+
+  let b = sum . fmap (reordered rs) $ ps
   pure (a, b)
