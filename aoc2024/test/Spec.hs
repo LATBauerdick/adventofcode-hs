@@ -10,6 +10,7 @@ import Aoc2 (aoc2)
 import Aoc3 (aoc3)
 import Aoc4 (aoc4)
 import Aoc5 (aoc5)
+import Aoc6 (aoc6)
 
 main :: IO ()
 main = do
@@ -18,9 +19,12 @@ main = do
 spec :: Spec
 spec =
   describe "AOC 2024" $ do
+    it "-----------test running aoc6" $ do
+      x <- aoc6
+      x `shouldBe` (0, 0)
     it "-----------test running aoc5" $ do
       x <- aoc5
-      x `shouldBe` (0, 0)
+      x `shouldBe` (7307, 4713)
     it "-----------test running aoc4" $ do
       x <- aoc4
       x `shouldBe` (2493, 1890)
