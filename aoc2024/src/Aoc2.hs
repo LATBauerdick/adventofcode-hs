@@ -17,7 +17,7 @@ readMaybeInt :: Text -> Maybe Int
 readMaybeInt = readMaybe . toString . T.filter (/= '+')
 
 readMaybeInts :: Text -> [Maybe Int]
-readMaybeInts l = map readMaybeInt $ T.splitOn " " l
+readMaybeInts l = fmap readMaybeInt $ T.splitOn " " l
 
 isSafe :: [Maybe Int] -> Bool
 isSafe is = isJust safe
