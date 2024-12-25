@@ -17,7 +17,7 @@ parseLine line = case T.words line of
   [x, y] -> do
     xInt <- readMaybe $ toString x
     yInt <- readMaybe $ toString y
-    return (xInt, yInt)
+    pure (xInt, yInt)
   _ -> Nothing
 
 aoc1 :: IO (Int, Int)

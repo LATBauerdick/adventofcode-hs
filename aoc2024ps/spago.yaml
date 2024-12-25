@@ -3,10 +3,12 @@ package:
   dependencies:
     - console
     - effect
+    - either
     - exceptions
     - integers
     - maybe
     - node-buffer
+    - node-fs
     - prelude
     - strings
     - stringutils
