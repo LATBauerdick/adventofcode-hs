@@ -1,9 +1,9 @@
 module Aoc2 (aoc2) where
 
-import Prelude (bind, discard, flip, map, pure, show, Unit, ($), (+), (-), (*), (>), (<), (&&), (||), (==), (/=), (<<<), (<*>))
+import Prelude (bind, discard, flip, map, pure, show, Unit, ($), (+), (-), (*), (>), (<), (&&), (||), (==), (/=), (<<<), (<*>), (<>))
 import Partial.Unsafe (unsafePartial)
 
-import Data.Array (drop, foldl, take, unzip, zipWith, mapMaybe, sort)
+import Data.Array (any, drop, foldl, init, length, range, sort, take, zipWith, unzip, mapMaybe)
 import Data.Array.NonEmpty (fromArray, foldr1, foldl1) as NEA
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Either (Either(..))
@@ -23,7 +23,7 @@ import Node.Encoding (Encoding(..))
 import Node.FS.Sync (readTextFile)
 
 slurp :: String -> Effect ( Array String )
-slurp fn =  lines <$> readTextFile UTF8 fn
+slurp fn = unsafePartial $ fromJust <$> init <$> lines <$> readTextFile UTF8 fn
 
 readMaybeInts :: String -> Array ( Maybe Int )
 readMaybeInts l = map fromString $ split (Pattern " ") l
@@ -47,6 +47,15 @@ isSafe is = safe
 parseLine :: String -> Boolean
 parseLine = isSafe <<< readMaybeInts
 
+parseLine1 :: String -> Boolean
+parseLine1 line = any isSafe iis
+ where
+  is = readMaybeInts line
+  len = length is
+  iis = map (dropNth is) $ range 0 len
+
+  dropNth :: forall a. Array a -> Int -> Array a
+  dropNth xs n = take n xs <> drop (n + 1) xs
 
 aoc2 :: Effect (Tuple Int Int)
 aoc2 = do
@@ -54,5 +63,6 @@ aoc2 = do
 
   let a = foldl (\cnt i -> if i then cnt + 1 else cnt) 0 <<< map parseLine $ ls
 
-  let b = 0
+  let b = foldl (\cnt i -> if i then cnt + 1 else cnt) 0 <<< map parseLine1 $ ls
+
   pure $ Tuple a b
