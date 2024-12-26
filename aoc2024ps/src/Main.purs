@@ -19,4 +19,4 @@ main :: Effect Unit
 main = do
   aoc1 >>= shouldBe (Tuple 1319616 27267728)
   aoc2 >>= shouldBe (Tuple 356 413)
-  aoc3 >>= shouldBe (Tuple 0 0)
+  aoc3 >>= shouldBe (Tuple 157621318 79845780)
