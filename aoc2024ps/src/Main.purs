@@ -6,6 +6,7 @@ import Data.Tuple
 import Effect (Effect)
 import Effect.Console (log)
 
+import Aoc3 ( aoc3 )
 import Aoc2 ( aoc2 )
 import Aoc1 ( aoc1 )
 
@@ -18,3 +19,4 @@ main :: Effect Unit
 main = do
   aoc1 >>= shouldBe (Tuple 1319616 27267728)
   aoc2 >>= shouldBe (Tuple 356 413)
+  aoc3 >>= shouldBe (Tuple 0 0)
