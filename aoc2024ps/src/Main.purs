@@ -1,11 +1,12 @@
 module Main where
 
 import Prelude
-import Data.Tuple
+import Data.Tuple(Tuple(..))
 
 import Effect (Effect)
 import Effect.Console (log)
 
+import Aoc4 ( aoc4 )
 import Aoc3 ( aoc3 )
 import Aoc2 ( aoc2 )
 import Aoc1 ( aoc1 )
@@ -20,3 +21,4 @@ main = do
   aoc1 >>= shouldBe (Tuple 1319616 27267728)
   aoc2 >>= shouldBe (Tuple 356 413)
   aoc3 >>= shouldBe (Tuple 157621318 79845780)
+  aoc4 >>= shouldBe (Tuple 0 0)
