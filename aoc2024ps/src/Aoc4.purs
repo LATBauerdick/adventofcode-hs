@@ -1,6 +1,6 @@
 module Aoc4 (aoc4) where
 
-import Data.Array (any, drop, fold, foldl, head, init, length, range, sort, take, transpose, zipWith, unzip, mapMaybe)
+import Data.Array (any, drop, fold, foldl, head, init, length, range, sort, take, transpose, zipWith, unzip, mapMaybe, (!!))
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty (fromArray, foldr1, foldl1) as NEA
 import Data.Either (Either(..))
@@ -11,15 +11,10 @@ import Data.Map (Map, empty, insertWith, lookup) as M
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)
 import Data.Ord (class Ord, abs, min)
 import Data.Show (class Show)
-import Data.String (drop, indexOf, length, split, splitAt) as S
+import Data.String (drop, indexOf, length, split, splitAt ) as S
+import Data.String (CodePoint, toCodePointArray)
 import Data.String.Pattern (Pattern(..))
 import Data.String.Utils (lines, words)
--- indexOf :: Pattern -> String -> Maybe Int
--- lastIndexOf :: Pattern -> String -> Maybe Int
--- contains :: Pattern -> String -> Boolean
--- split :: Pattern -> String -> Array String
--- splitAt :: Int -> String -> { after :: String, before :: String }
-
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable (unfoldr)
 import Effect (Effect)
@@ -28,7 +23,7 @@ import Effect.Exception (Error)
 import Node.Encoding (Encoding(..))
 import Node.FS.Sync (readTextFile)
 import Partial.Unsafe (unsafePartial)
-import Prelude (bind, const, discard, flip, map, pure, show, Unit, ($), (+), (-), (*), (>), (<), (&&), (||), (==), (/=), (<<<), (<*>), (<>))
+import Prelude (bind, const, discard, flip, map, pure, show, Unit, ($), (+), (-), (*), (>), (<), (>=), (&&), (||), (==), (/=), (<<<), (<*>), (<>))
 
 slurp :: String -> Effect ( Array String )
 slurp fn = unsafePartial $ fromJust <$> init <$> lines <$> readTextFile UTF8 fn
@@ -96,7 +91,14 @@ aoc4 = do
       tl = nl * ll
 
   print [ll, nl, tl]
+  let cs :: Array (Array CodePoint)
+      cs = map toCodePointArray ls
 
+  let lup :: Array (Array CodePoint) -> Tuple Int Int -> Maybe CodePoint
+      lup ts (Tuple r c)
+        | r < 0 || r >= ll = Nothing
+        | c < 0 || c >= nl = Nothing
+        | otherwise = Just $ S.index (ts !! r) c
 
   let a = 0
   let b = 0
