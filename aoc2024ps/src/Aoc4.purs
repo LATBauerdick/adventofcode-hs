@@ -1,6 +1,6 @@
 module Aoc4 (aoc4) where
 
-import Data.Array (any, drop, fold, foldl, head, init, length, range, sort, take, transpose, zipWith, unzip, mapMaybe, (!!))
+import Data.Array (any, drop, fold, foldl, head, index, init, length, range, sort, take, transpose, zipWith, unzip, mapMaybe, (!!))
 import Data.Array.NonEmpty (NonEmptyArray)
 import Data.Array.NonEmpty (fromArray, foldr1, foldl1) as NEA
 import Data.Either (Either(..))
@@ -12,7 +12,7 @@ import Data.Maybe (Maybe(..), fromJust, fromMaybe, isJust)
 import Data.Ord (class Ord, abs, min)
 import Data.Show (class Show)
 import Data.String (drop, indexOf, length, split, splitAt ) as S
-import Data.String (CodePoint, toCodePointArray)
+import Data.String.CodeUnits(toCharArray, charAt) as S
 import Data.String.Pattern (Pattern(..))
 import Data.String.Utils (lines, words)
 import Data.Tuple (Tuple(..))
@@ -23,7 +23,7 @@ import Effect.Exception (Error)
 import Node.Encoding (Encoding(..))
 import Node.FS.Sync (readTextFile)
 import Partial.Unsafe (unsafePartial)
-import Prelude (bind, const, discard, flip, map, pure, show, Unit, ($), (+), (-), (*), (>), (<), (>=), (&&), (||), (==), (/=), (<<<), (<*>), (<>))
+import Prelude (bind, const, discard, flip, map, otherwise, pure, show, Unit, ($), (+), (-), (*), (>), (<), (>=), (&&), (||), (==), (/=), (<<<), (<*>), (>>=), (=<<), (<>))
 
 slurp :: String -> Effect ( Array String )
 slurp fn = unsafePartial $ fromJust <$> init <$> lines <$> readTextFile UTF8 fn
@@ -84,23 +84,22 @@ parseLine l = n
 aoc4 :: Effect (Tuple Int Int)
 aoc4 = do
   ls <- take 10 <$> slurp "data/aoc4.dat"
-  let ml :: Maybe Int
-      ml = S.length <$> head ls
   let ll = fromMaybe 0 $ S.length <$> head ls
       nl = length ls
       tl = nl * ll
 
   print [ll, nl, tl]
-  let cs :: Array (Array CodePoint)
-      cs = map toCodePointArray ls
+  -- let cs :: Array (Array Char)
+  --     cs = map S.toCharArray ls
 
-  let lup :: Array (Array CodePoint) -> Tuple Int Int -> Maybe CodePoint
+  let lup :: Array (String) -> Tuple Int Int -> Maybe Char
       lup ts (Tuple r c)
         | r < 0 || r >= ll = Nothing
         | c < 0 || c >= nl = Nothing
-        | otherwise = Just $ S.index (ts !! r) c
+        | otherwise = S.charAt c =<< ts !! r
 
   let a = 0
   let b = 0
 
+  print $ lup ls (Tuple 1 1)
   pure $ Tuple a b
